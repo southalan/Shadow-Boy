@@ -18,4 +18,4 @@ The game doesn't have an IA just yet, so you just move and kill your opponent.
 There are a lot of planned futures, but for now this is a test-bed for fun. 
 
 You can also run it from main.py if you like it so. 
-Check that for release 0.1, the checksum is: ACFD98499D91781A9DA0460314792F504C9CC614B5A478E384A86FF63FF72958
+Check that for release 0.1, the checksum is SHA-256: ACFD98499D91781A9DA0460314792F504C9CC614B5A478E384A86FF63FF72958
