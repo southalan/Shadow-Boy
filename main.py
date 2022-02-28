@@ -173,6 +173,7 @@ melee_attack = "melee_attack.wav"
 ranged_attack = "ranged_attack.wav"
 death_scream = "scream.wav"
 chair_sound = "chair_destruction.wav"
+error_sound = "error.wav"
 
 # Turns 
 
@@ -395,16 +396,8 @@ def new_character():
         drawn_image = pygame.image.load(available_portraits[current_image])
         screen.blit(drawn_image, (100, 170))
         pygame.display.update()
-        
-    # 09-Feb-2022: One idea is to super-impose another bg image only for the stats, so another minimalist function like (update_portrait) can be used to save memory and be more modular
     
     # Sound
-    
-    def error_sound(): # 25-Feb-2022: Pending to be re-factored in the action_sound() along with other instances (electricity.wav) too
-        error = pygame.mixer.Sound("error.wav")
-        pygame.mixer.Sound.play(error)
-        pygame.mixer.music.stop()
-        
         
     update_screen(current_image)
         
@@ -513,7 +506,7 @@ def new_character():
                 
                 if continue_button_box.collidepoint(pygame.mouse.get_pos()):
                     if (points != 0): # Check if all the points have been allocated
-                        error_sound()
+                        action_sound(error_sound)
                         ptext.draw(str(points), (360, 140), color = red, fontname = game_font, fontsize = 20, lineheight = 1.5, align = "left")
                         pygame.display.update()
                     elif (player.name == ""): # Check if the player has added its name 
@@ -560,33 +553,27 @@ def history_engine(enemy_name, enemy_portrait, enemy_history): # The epilogue of
     entry_boxer = "The " + enemy_name + " babbles incoherently about hooks and fishes."
     history_boxer = "You got me. I have trained extensively, but not for the end of the world, really. \nWho does that? Bet you did. Are you one of those paranoids that builds a bunker? \nWish I was the 'Bunker Dude' and no the 'Boxer' right now, but life is like that. \nGood luck to you."
     
-    if(enemy_history == 1): # The chair
+    def history_selection(enemy_history, introduction, entry, history):
         screen.blit(bg, (0, 0))
         ptext.draw(enemy_name, (725, 25), color = white, fontname = game_font, fontsize = 20, lineheight = 1.5, align = "left")
         screen.blit(enemy_portrait, (700, 50))
         ptext.draw(introduction, (50, 50), color = white, fontname = game_font, fontsize = 20, lineheight = 1.5, align = "left")
-        ptext.draw(entry_chair, (50, 100), color = white, fontname = game_font, fontsize = 20, lineheight = 1.5, align = "left")
-        ptext.draw(history_chair, (50, 125), color = white, fontname = game_font, fontsize = 20, lineheight = 1.5, align = "left")
+        ptext.draw(entry, (50, 100), color = white, fontname = game_font, fontsize = 20, lineheight = 1.5, align = "left")
+        ptext.draw(history, (50, 125), color = white, fontname = game_font, fontsize = 20, lineheight = 1.5, align = "left")
+    
+    
+    if(enemy_history == 1): # The chair
+        history_selection(enemy_history, introduction, entry_chair, history_chair)
         screen.blit(chair_button, (screen_width/2, 620))
         pygame.display.update()
         
     if(enemy_history == 2): # The cultist
-        screen.blit(bg, (0, 0))
-        ptext.draw(enemy_name, (725, 25), color = white, fontname = game_font, fontsize = 20, lineheight = 1.5, align = "left")
-        screen.blit(enemy_portrait, (700, 50))
-        ptext.draw(introduction, (50, 50), color = white, fontname = game_font, fontsize = 20, lineheight = 1.5, align = "left")
-        ptext.draw(entry_cultist, (50, 100), color = white, fontname = game_font, fontsize = 20, lineheight = 1.5, align = "left")
-        ptext.draw(history_cultist, (50, 125), color = white, fontname = game_font, fontsize = 20, lineheight = 1.5, align = "left")
+        history_selection(enemy_history, introduction, entry_cultist, history_cultist)
         pygame.display.update()
         
         
     if(enemy_history == 3): # The boxer
-        screen.blit(bg, (0, 0))
-        ptext.draw(enemy_name, (725, 25), color = white, fontname = game_font, fontsize = 20, lineheight = 1.5, align = "left")
-        screen.blit(enemy_portrait, (700, 50))
-        ptext.draw(introduction, (50, 50), color = white, fontname = game_font, fontsize = 20, lineheight = 1.5, align = "left")
-        ptext.draw(entry_boxer, (50, 100), color = white, fontname = game_font, fontsize = 20, lineheight = 1.5, align = "left")
-        ptext.draw(history_boxer, (50, 125), color = white, fontname = game_font, fontsize = 20, lineheight = 1.5, align = "left")
+        history_selection(enemy_history, introduction, entry_boxer, history_boxer)
         pygame.display.update()
 
     while status:
@@ -682,8 +669,6 @@ def game_engine():
     enm_position = -36 + (630 / 2) + (enemy_portrait_pixels.movement * 15) # Enemy initial place to be 
 
     d_marker = pygame.image.load("arrowd.png")
-
-    # background_right = pygame.image.load("menu bg.jpg") Leaving this to implement specific background images for some special enemies. 
     
     # Buttons 
     
@@ -748,9 +733,6 @@ def game_engine():
             return False
         else:
             return True
-        
-    def push(distance): # 23-Feb-2022: Pending implementation for "Push", use distance_entities to check if they are actually at distance 0 and then move them accordingly. 
-        pass
 
     def update_engine():
         
@@ -816,7 +798,7 @@ def game_engine():
         ptext.draw("Move", (450, 550), color = white, fontname = game_font, fontsize = 15, lineheight = 1.5, align = "left")
         screen.blit(button_1, (400, 550)) # Left button
         screen.blit(button_2, (500, 550)) # Right button 
-        ptext.draw("Actions", (450, 600), color = white, fontname = game_font, fontsize = 15, lineheight = 1.5, align = "left")
+        ptext.draw("Push", (450, 600), color = white, fontname = game_font, fontsize = 15, lineheight = 1.5, align = "left")
         screen.blit(button_4, (400, 600)) # Action button 
         # Enemy side
         ptext.draw(enemy_name, (800, 470), color = white, fontname = game_font, fontsize = 20, lineheight = 1.5, align = "center")
@@ -953,9 +935,19 @@ def game_engine():
                             update_engine()
             
             # Actions       
-                if button_4_box.collidepoint(pygame.mouse.get_pos()):
-                    print("Action!")
-                    
+                if button_4_box.collidepoint(pygame.mouse.get_pos()): # 28-Feb-2022: Pushing the enemy away, towards the right side of the screen. Correct so the enemy portrait actually moves. 
+                    if(distance_entities == 0):
+                        print("You are at distance 0!")
+                        if (strength > e_strength):
+                            strength_difference = int(strength) - int(e_strength)
+                            player.position = movement_right(player.position, strength_difference)
+                            p_offset = player_portrait_pixels.movement * int(strength_difference)
+                            ply_position = ply_position + p_offset
+                            distance_entities = (player.position - e_position) * -1 # Updating the current position of the player, relative to the enemy. 
+                            player_turns.circle = 0
+                            print("You push the enemy by " + str(strength_difference))
+                    else:
+                        print("You are too far to push, you need to be at distance 0")
                 if button_6_box.collidepoint(pygame.mouse.get_pos()):
                     print("End Turn!")
                     print("Fresh as lettuce again!")
@@ -979,10 +971,9 @@ def main_menu():
     moving_sprites = pygame.sprite.Group()
     place = Sprite(10, 10)
     moving_sprites.add(place)
-    electricity = pygame.mixer.Sound("electricity.wav") # Interesting question regarding centralized sound in PyGame https://stackoverflow.com/questions/39525806/music-fadeout-appears-to-block-sounds-after-fadeout-complete
-    electricity.play(-1)
+    electricity = "electricity.wav"
+    action_sound(electricity)
 
-    
     # Main loop
     while status:
         for event in pygame.event.get():
